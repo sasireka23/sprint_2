@@ -1,20 +1,23 @@
 import sqlite3
 import queries as q
+import pandas as pd
 
-#step 1 - connect to the database
+#DB Connect function
+def connect_to_db(db_name = 'rpg_db.sqlite3'):
+    return sqlite3.connect(db_name)
 
-connection =  sqlite3.connect('rpg_db.sqlite3')
+#Execute the query function
+def execute_q(conn, query):
+    cursr = conn.cursor()
+    cursr.execute(query)
+    return cursr.fetchall()
 
-#step 2 - make the cursor
-
-cursor = connection.cursor()
-
-#step3 - write the query
-
-
-#step 4 - execute the query
-
-results = cursor.execute(q.SELECT_ALL).fetchall()
 
 if __name__ == '__main__':
-    print(results[:5])
+    conn = connect_to_db()
+    result = execute_q(conn, q.SELECT_AVG_ITEM_WEIGHT)
+
+    df = pd.DataFrame(result)
+    df.columns = ['name','avg_item_weight']
+    print(df.head())
+    df.to_csv('rpg_db.csv')
